@@ -3,7 +3,7 @@ import { TextField } from '@mui/material';
 
 const DateTimeQuestion = ({ question, value, onChange, error, disabled }) => {
   const getInputType = () => {
-    switch (question.dateTimeType) {
+    switch (question.type) {
       case 'date':
         return 'date';
       case 'time':

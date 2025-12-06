@@ -22,7 +22,23 @@ const QuestionEditor = ({ question, onUpdate, onDelete, allQuestions }) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleChange = (field, value) => {
-    onUpdate({ ...question, [field]: value });
+    const updatedQuestion = { ...question, [field]: value };
+    
+    if (field === 'type') {
+      const needsOptionsForNewType = [
+        QuestionType.MULTIPLE_CHOICE,
+        QuestionType.CHECKBOXES,
+        QuestionType.DROPDOWN,
+      ].includes(value);
+      
+      if (needsOptionsForNewType && (!question.options || question.options.length === 0)) {
+        updatedQuestion.options = [
+          { value: 'option_1', label: 'Option 1' }
+        ];
+      }
+    }
+    
+    onUpdate(updatedQuestion);
   };
 
   const addOption = () => {
@@ -164,8 +180,14 @@ const QuestionEditor = ({ question, onUpdate, onDelete, allQuestions }) => {
                   placeholder="Option label"
                   value={option.label}
                   onChange={(e) => {
-                    updateOption(index, 'label', e.target.value);
-                    updateOption(index, 'value', e.target.value.toLowerCase().replace(/\s+/g, '_'));
+                    const newLabel = e.target.value;
+                    const options = [...question.options];
+                    options[index] = {
+                      ...options[index],
+                      label: newLabel,
+                      value: newLabel.toLowerCase().replace(/\s+/g, '_')
+                    };
+                    handleChange('options', options);
                   }}
                   sx={{ flex: 1, '& .MuiOutlinedInput-input': { py: 0.75, fontSize: '0.8125rem' } }}
                 />
