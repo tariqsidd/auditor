@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { Plus, Save } from 'lucide-react';
+import { Plus, Save, Trash2, GripVertical } from 'lucide-react';
 import QuestionEditor from './QuestionEditor';
 import SortableQuestion from './SortableQuestion';
 import { QuestionType } from '../../types';
@@ -50,6 +50,33 @@ const FormBuilder = () => {
             },
         })
     );
+
+    const addSection = () => {
+        const newSection = {
+            id: crypto.randomUUID(),
+            title: 'New Section',
+            questions: [],
+        };
+        setTemplate({ ...template, sections: [...template.sections, newSection] });
+    };
+
+    const updateSection = (index, field, value) => {
+        const newSections = [...template.sections];
+        newSections[index] = { ...newSections[index], [field]: value };
+        setTemplate({ ...template, sections: newSections });
+    };
+
+    const deleteSection = (index) => {
+        if (template.sections.length === 1) {
+            alert('You must have at least one section.');
+            return;
+        }
+        if (window.confirm('Are you sure you want to delete this section and all its questions?')) {
+            const newSections = [...template.sections];
+            newSections.splice(index, 1);
+            setTemplate({ ...template, sections: newSections });
+        }
+    };
 
     const addQuestion = (sectionIndex) => {
         const newQuestion = {
@@ -188,19 +215,27 @@ const FormBuilder = () => {
 
             {/* Sections */}
             {template.sections.map((section, sectionIndex) => (
-                <Box key={section.id} sx={{ mb: 3 }}>
-                    <Typography
-                        variant="subtitle2"
-                        sx={{
-                            mb: 1.5,
-                            color: 'text.secondary',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            fontSize: '0.7rem',
-                        }}
-                    >
-                        {section.title}
-                    </Typography>
+                <Box key={section.id} sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+                        <TextField
+                            fullWidth
+                            variant="standard"
+                            value={section.title}
+                            onChange={(e) => updateSection(sectionIndex, 'title', e.target.value)}
+                            placeholder="Section Title"
+                            InputProps={{
+                                style: { fontSize: '1.1rem', fontWeight: 600 }
+                            }}
+                        />
+                        <Button
+                            size="small"
+                            color="error"
+                            onClick={() => deleteSection(sectionIndex)}
+                            startIcon={<Trash2 size={18} />}
+                            sx={{ minWidth: 'auto', px: 1 }}
+                        >
+                        </Button>
+                    </Box>
 
                     <DndContext
                         sensors={sensors}
@@ -237,6 +272,16 @@ const FormBuilder = () => {
                     </Button>
                 </Box>
             ))}
+
+            <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<Plus size={20} />}
+                onClick={addSection}
+                sx={{ mb: 3, py: 1.5, borderStyle: 'dashed' }}
+            >
+                Add New Section
+            </Button>
 
             {/* Footer Actions */}
             <Box
