@@ -86,7 +86,7 @@ const TemplateList = () => {
 
       <Grid container spacing={3}>
         {displayedTemplates.map((template) => (
-          <Grid item xs={12} sm={6} md={4} key={template.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
             <Card elevation={2}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>

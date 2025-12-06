@@ -134,19 +134,91 @@ const FormRenderer = () => {
           </Typography>
         )}
 
-        <LinearProgress variant="determinate" value={progress} sx={{ mb: 3 }} />
-
+        {/* Mobile: Compact step indicator */}
         {template.sections.length > 1 && (
-          <Stepper activeStep={currentSection} sx={{ mb: 4 }}>
-            {template.sections.map((sec) => (
-              <Step key={sec.id}>
-                <StepLabel>{sec.title}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          <Box
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              alignItems: 'center',
+              gap: 2,
+              mb: 3,
+              p: 2,
+              borderRadius: 2,
+              backgroundColor: '#f8f9fa',
+            }}
+          >
+            {/* Step counter circle */}
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                backgroundColor: '#111827',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                flexShrink: 0,
+              }}
+            >
+              {currentSection + 1}/{template.sections.length}
+            </Box>
+            {/* Step info */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.65rem' }}
+              >
+                Current Step
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                sx={{ fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+              >
+                {section.title}
+              </Typography>
+            </Box>
+            {/* Mini progress dots */}
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              {template.sections.map((_, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: idx <= currentSection ? '#111827' : '#d1d5db',
+                    transition: 'background-color 0.2s',
+                  }}
+                />
+              ))}
+            </Box>
+          </Box>
         )}
 
-        <Typography variant="h5" gutterBottom>
+        {/* Desktop: Full stepper */}
+        {template.sections.length > 1 && (
+          <Box sx={{ display: { xs: 'none', md: 'block' }, mb: 4 }}>
+            <Stepper activeStep={currentSection}>
+              {template.sections.map((sec) => (
+                <Step key={sec.id}>
+                  <StepLabel>{sec.title}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+        )}
+
+        <LinearProgress variant="determinate" value={progress} sx={{ mb: 3, display: { xs: 'none', md: 'block' } }} />
+
+        <Typography variant="h5" sx={{ display: { xs: 'none', md: 'block' } }} gutterBottom>
+          {section.title}
+        </Typography>
+
+        {/* Mobile section title */}
+        <Typography variant="h6" sx={{ display: { xs: 'block', md: 'none' }, fontWeight: 600, mb: 2 }}>
           {section.title}
         </Typography>
 
