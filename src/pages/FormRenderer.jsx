@@ -4,9 +4,6 @@ import {
   Typography,
   Button,
   Box,
-  Stepper,
-  Step,
-  StepLabel,
   LinearProgress,
   Alert,
 } from '@mui/material';
@@ -119,7 +116,7 @@ const FormRenderer = () => {
 
   const section = template.sections[currentSection];
   const visibleQuestions = section.questions.filter((q) => shouldShowQuestion(q, answers));
-  const progress = ((currentSection + 1) / template.sections.length) * 100;
+  const progress = (currentSection / template.sections.length) * 100;
 
   return (
     <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto', px: { xs: 2, sm: 3 }, py: 4 }}>
@@ -134,32 +131,59 @@ const FormRenderer = () => {
           </Typography>
         )}
 
-        {/* Mobile: Compact step indicator */}
+        {/* Progress Bar */}
+        {template.sections.length > 1 && (
+          <Box sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.875rem' }}>
+                Progress
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '0.875rem' }}>
+                {Math.round(progress)}%
+              </Typography>
+            </Box>
+            <LinearProgress 
+              variant="determinate" 
+              value={progress} 
+              sx={{ 
+                height: 8, 
+                borderRadius: 4,
+                backgroundColor: '#e0e0e0',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 4
+                }
+              }} 
+            />
+          </Box>
+        )}
+
+        {/* Compact Step Indicator - All Screens */}
         {template.sections.length > 1 && (
           <Box
             sx={{
-              display: { xs: 'flex', md: 'none' },
+              display: 'flex',
               alignItems: 'center',
               gap: 2,
-              mb: 3,
-              p: 2,
+              mb: 4,
+              p: { xs: 2, sm: 2.5 },
               borderRadius: 2,
               backgroundColor: '#f8f9fa',
+              border: '1px solid #e0e0e0',
             }}
           >
             {/* Step counter circle */}
             <Box
               sx={{
-                width: 44,
-                height: 44,
+                width: { xs: 44, sm: 48 },
+                height: { xs: 44, sm: 48 },
                 borderRadius: '50%',
-                backgroundColor: '#111827',
+                backgroundColor: 'primary.main',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 600,
-                fontSize: '0.875rem',
+                fontWeight: 700,
+                fontSize: { xs: '0.875rem', sm: '0.95rem' },
                 flexShrink: 0,
               }}
             >
@@ -169,19 +193,33 @@ const FormRenderer = () => {
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 variant="caption"
-                sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.65rem' }}
+                sx={{ 
+                  color: 'text.secondary', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.05em', 
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  display: 'block'
+                }}
               >
-                Current Step
+                Step {currentSection + 1} of {template.sections.length}
               </Typography>
               <Typography
-                variant="subtitle2"
-                sx={{ fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                variant="subtitle1"
+                sx={{ 
+                  fontWeight: 700, 
+                  fontSize: { xs: '0.95rem', sm: '1.05rem' },
+                  whiteSpace: 'nowrap', 
+                  overflow: 'hidden', 
+                  textOverflow: 'ellipsis',
+                  mt: 0.25
+                }}
               >
                 {section.title}
               </Typography>
             </Box>
             {/* Mini progress dots */}
-            <Box sx={{ display: 'flex', gap: 0.5 }}>
+            <Box sx={{ display: { xs: 'flex', sm: 'flex' }, gap: 0.5, flexShrink: 0 }}>
               {template.sections.map((_, idx) => (
                 <Box
                   key={idx}
@@ -189,38 +227,14 @@ const FormRenderer = () => {
                     width: 8,
                     height: 8,
                     borderRadius: '50%',
-                    backgroundColor: idx <= currentSection ? '#111827' : '#d1d5db',
-                    transition: 'background-color 0.2s',
+                    backgroundColor: idx <= currentSection ? 'primary.main' : '#d1d5db',
+                    transition: 'background-color 0.3s ease',
                   }}
                 />
               ))}
             </Box>
           </Box>
         )}
-
-        {/* Desktop: Full stepper */}
-        {template.sections.length > 1 && (
-          <Box sx={{ display: { xs: 'none', md: 'block' }, mb: 4 }}>
-            <Stepper activeStep={currentSection}>
-              {template.sections.map((sec) => (
-                <Step key={sec.id}>
-                  <StepLabel>{sec.title}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-        )}
-
-        <LinearProgress variant="determinate" value={progress} sx={{ mb: 3, display: { xs: 'none', md: 'block' } }} />
-
-        <Typography variant="h5" sx={{ display: { xs: 'none', md: 'block' } }} gutterBottom>
-          {section.title}
-        </Typography>
-
-        {/* Mobile section title */}
-        <Typography variant="h6" sx={{ display: { xs: 'block', md: 'none' }, fontWeight: 600, mb: 2 }}>
-          {section.title}
-        </Typography>
 
         <Box sx={{ mt: 3 }}>
           {visibleQuestions.map((question) => {
