@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
 import Navigation from './components/Layout/Navigation';
@@ -7,6 +7,7 @@ import TemplateList from './pages/TemplateList';
 import FormBuilder from './components/FormBuilder/FormBuilder';
 import FormRenderer from './pages/FormRenderer';
 import ResponseList from './pages/ResponseList';
+import useTemplateStore from './store/templateStore';
 
 const theme = createTheme({
   palette: {
@@ -269,6 +270,13 @@ const theme = createTheme({
 });
 
 function App() {
+  const syncSampleTemplates = useTemplateStore((state) => state.syncSampleTemplates);
+
+  useEffect(() => {
+    // Sync sample templates on app load
+    syncSampleTemplates();
+  }, [syncSampleTemplates]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

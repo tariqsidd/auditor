@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { sampleTemplates } from '../data/sampleTemplates';
 
 const dummyTemplates = [
   {
@@ -813,11 +814,15 @@ const dummyTemplates = [
   },
 ];
 
+// Combine all initial templates
+const getAllInitialTemplates = () => [...dummyTemplates, ...sampleTemplates];
+
 const useTemplateStore = create(
   persist(
     (set, get) => ({
-      templates: dummyTemplates,
+      templates: getAllInitialTemplates(),
       currentTemplate: null,
+      _hasHydrated: false,
       
       createTemplate: (template) => {
         const newTemplate = {
@@ -908,6 +913,20 @@ const useTemplateStore = create(
             t.description?.toLowerCase().includes(lowerQuery) ||
             t.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery))
         );
+      },
+
+      // Sync sample templates - adds any missing sample templates
+      syncSampleTemplates: () => {
+        const currentTemplates = get().templates;
+        const allSampleTemplates = getAllInitialTemplates();
+        const currentIds = new Set(currentTemplates.map(t => t.id));
+        const newTemplates = allSampleTemplates.filter(t => !currentIds.has(t.id));
+
+        if (newTemplates.length > 0) {
+          set((state) => ({
+            templates: [...state.templates, ...newTemplates],
+          }));
+        }
       },
     }),
     {
